@@ -57,17 +57,3 @@ class Jupiter:
         res = self.sendAndReadCommand(command)
         tTarget  = int.from_bytes(res[res.find(b"\x04")+3:-2], "big")/10
         return tTarget
-
-###############################################################
-"""
-# Example:
-# working settings for Jupiter4852
-J = Jupiter('/dev/ttyr03', bd = 9600, stopbits = 1, bytesize = 8, timeout= 0.1)
-
-J.setTemperature(34.56)
-tCurrent = J.readCurrentTemperature()
-tTarget  = J.readTargetTemperature()
-
-print(tCurrent)
-print(tTarget)
-"""
