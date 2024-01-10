@@ -6,10 +6,20 @@ import warnings
 import logging
 import datetime
 
+# This Script does fully automate the calibration Process of the Jupiter.
+# Note that this Script only controlls the Jupiter the sensors have to be controlled with a different script (Multilog)
+# The Script stays at the choosen Setpoints (see/edit below) for 25min to 40min to achive stationarity and then continues to the next temperature
+# When the Script is finished the Script cools down to 20°C (but does not shutdown the device!)
+
+
+############### INPUT ###############
+temperatureList  = [50,150,250,350,450,550,650] # EDIT SETPOINTS (in °C) HERE!
+setpointTimeList = [35, 25, 25, 25, 25, 40, 60] # EDIT WAITTIME (in minutes) FOR EACH TEMPERATURE HERE!
+#####################################
+
+
 
 # Preperation
-temperatureList = [50,150,250,350,450,550,650] # EDIT SETPOINTS HERE!
-
 ## Generate Folder and File
 ### Generate Folder
 date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -20,10 +30,18 @@ for i in range(100):
     if not os.path.exists(directory):
         os.makedirs(directory)
         break
-
+        
+### calculate runtime
+totalTime = 0
+for time in setpointTimeList:
+    totalTime = totalTime+time
+    
 logging.basicConfig(level=logging.DEBUG, filename=os.path.join(directory, "log"), filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', datefmt="%d-%b-%y %H:%M:%S")
 logging.info("starting log")
-logging.debug(f"SetPoints: {temperatureList} [°C]")
+logging.info(f"Total Runtime: {round(totalTime/60,1)}h")
+print(f"Total Runtime: {round(totalTime/60,1)}h")
+logging.debug(f"SetPoints:      {temperatureList} [°C]")
+logging.debug(f"Setpoint Times: {setpointTimeList} [min]")
 
 ### Generate CSV
 with open(os.path.join(directory, "data.csv"), "w", encoding="utf-8") as f: 
@@ -41,22 +59,20 @@ except:
 
 
 # Loop
-logging.info("starting Measerment")
+logging.info("starting measurement")
 start_time = datetime.datetime.now(datetime.timezone.utc).astimezone()
-for targetTemperature in temperatureList:
+for setpointNr in range(len(temperatureList)):
     
     # set new temperature
+    targetTemperature = temperatureList[setpointNr]
     J.setTemperature(targetTemperature)
     setpointStartTime = datetime.datetime.now(datetime.timezone.utc).astimezone()
     print(f"{setpointStartTime}: Next Temperature: {targetTemperature}°C")
     
     # Calculate how much time is needed for the setpoint
-    if targetTemperature <= 450:
-        setpointTargetTime = 60*25 # hold temperature for 25 minutes if SP is under 400°C
-    else:
-        setpointTargetTime = 60*40 # hold temperature for 40 minutes if SP is above 400°C
+    setpointTime = setpointTimeList[setpointNr]
 
-    logging.info(f"Next Temperature: {targetTemperature}°C, holding for {setpointTargetTime} min.")
+    logging.info(f"Next Temperature: {targetTemperature}°C, holding for {setpointTime} min.")
 
     while True:
 
@@ -74,13 +90,16 @@ for targetTemperature in temperatureList:
         # abort if script takes to long.
         if time_rel >= 60*60*10:
             J.setTemperature(20)
+            logging.critical("Script took longer then 10h. Setpoint was set to 20°C and script was aborted.")
             raise ValueError("Script took longer then 10h. Setpoint was set to 20°C and script was aborted.")
-        if setpointRelTime >= 60*60*1: # should not be possible
+        if setpointRelTime >= 60*60*2:
             J.setTemperature(20)
-            raise ValueError("Setpoint took longer then 1h. Setpoint was set to 20°C and script was aborted.")
+            logging.critical("Setpoint took longer then 2h. Setpoint was set to 20°C and script was aborted.")
+            raise ValueError("Setpoint took longer then 2h. Setpoint was set to 20°C and script was aborted.")
 
         # check if next setpoint should start
-        if setpointRelTime >= setpointTargetTime:
+        if setpointRelTime >= setpointTime:
+            logging.debug("next checkpoint is triggert.")
             break
         
         #calculate sleep time
