@@ -29,6 +29,14 @@ Parity:   None
 bytesize: 8
 stopbits: 1
 
+### 6.1 Dependencies
+```python
+import warnings
+import serial
+from modbus_crc import add_crc
+import time
+```
+
 ## 7. Use of jupiter4852.py
 Initiate Jupiter
 ```python
