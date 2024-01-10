@@ -40,7 +40,7 @@ J = Jupiter('/dev/ttyr03', bd = 9600, stopbits = 1, bytesize = 8, timeout = 0.1)
 
 Set Setpoint (desierd Temperature)
 ```python
-J.setTemperature(34.56)
+J.setTemperature(34.56) #0.06 will be cut of because reselution was set to XX.X°C
 ```
 
 read Setpoint
