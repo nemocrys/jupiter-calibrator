@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/722139354.svg)](https://doi.org/10.5281/zenodo.15214432)
+
 # jupiter-calibrator
 
 Scripts for controlling a calibrator of temperature sensors
