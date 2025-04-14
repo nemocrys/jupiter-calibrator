@@ -1,5 +1,9 @@
+# jupiter-calibrator
+
+Scripts for controlling a calibrator of temperature sensors
+
 ## 1. About Us:
-The project is being processed by the model experiments group at the IKZ - Leibniz Institut für Kristallzüchtung.
+The project is developed and maintained by the [Model experiments group](https://www.ikz-berlin.de/en/research/materials-science/section-fundamental-description#c488) at the Leibniz Institute for Crystal Growth (IKZ).
 
 ## 2. Introduction:
 jupiter4852.py allows comunication with the Temperature Calibration Device "Jupiter 4852 Basic" over the RS422/RS232 Port with help of the Modbus Protocoll.
@@ -9,8 +13,8 @@ Currently the current temperature can be read and the setpoint can be read and w
 __Isotech Jupiter 4852 Basic:__
 https://isotech.co.uk/wp-content/uploads/2020/09/BASIC-SITE-Jupiter.pdf
 
-__Comunications Manual between Jupiter 4852 Basic and PC with Modbus__
-https://www.eurotherm.com/?wpdmdl=27877
+__Comunications Manual between Jupiter 4852 Basic and PC with Modbus:__
+[Series 2000 Communcation Handbook from Eurotherm (HA026230)](https://www.eurotherm.com/?wpdmdl=27877)
 
 ## 5. Hardware setup:
  __The Jupiter 4852 must be connected to the comupter using the official adapter by Isotherm!__
@@ -63,11 +67,15 @@ print(tCurrent)
 
 send custom Modbus-comands (good luck)  
 crc will be added automaticly  
-[All comands can be found on page 39ff.](https://www.eurotherm.com/?wpdmdl=27877)
+All comands can be found on page 39ff of the [Series 2000 Communcation Handbook from Eurotherm (HA026230)](https://www.eurotherm.com/?wpdmdl=27877)
 ```python
 command = b"\x02\x03\x00\x01\x00\x02\x95\xF8" # readCurrentTemperature
 res = J.sendAndReadCommand(command)
 print(res)
 # 30.1
 ```
+## Acknowledgements
 
+[This project](https://nemocrys.github.io/) has received funding from the European Research Council (ERC) under the European Union's Horizon 2020 research and innovation programme (grant agreement No 851768).
+
+<img src="https://github.com/nemocrys/test-cz-induction/blob/main/EU-ERC.png">
